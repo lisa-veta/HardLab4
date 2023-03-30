@@ -86,7 +86,7 @@ namespace HardLab4
         {
             Rows = new List<Row>();
         }
-        ///private TableScheme Scheme { get; set; }
+        public TableScheme Scheme { get; set; }
     }
 
     public class Row
@@ -105,6 +105,7 @@ namespace HardLab4
         {
             TableScheme tableScheme = TableScheme.ReadFile(pathScheme);
             Table table = new Table();
+            table.Scheme = tableScheme;
 
             string[] lines = File.ReadAllLines(pathTable);
             for (int i = 0; i < lines.Length; i++)
@@ -149,6 +150,18 @@ namespace HardLab4
                             row.Data.Add(tableScheme.Columns[i], line[i]);
                             break;
                         }
+                    case "datetime":
+                        {
+                            if (DateTime.TryParse(line[i], out DateTime number))
+                            {
+                                row.Data.Add(tableScheme.Columns[i], number);
+                            }
+                            else
+                            {
+                                throw new ArgumentException($"В файле {pathTable} в строке {numberOfLine + 1} в столбце {i + 1} записаны некорректные данные");
+                            }
+                            break;
+                        }
                 }
             }
             return row;
@@ -160,7 +173,14 @@ namespace HardLab4
     {
         public static void PrintTable(Table table)
         {
-
+            for (int i = 0; i < table.Rows.Count; i++)
+            {
+                for(int j = 0; j < table.Scheme.Columns.Count; j++)
+                {
+                    Console.Write(table.Rows[i].Data[table.Scheme.Columns[j]] + " ");
+                }
+                Console.WriteLine();
+            }
         }
     }
 
