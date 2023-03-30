@@ -1,7 +1,8 @@
 ﻿using HardLab4;
 using System;
-using static System.Net.Mime.MediaTypeNames;
+using System.Text.Json.Serialization;
 using System.Text.Json;
+using System.Dynamic;
 
 namespace HardLab4
 {
@@ -9,22 +10,26 @@ namespace HardLab4
     {
         static void Main()
         {
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
-            TableScheme tableScheme = TableScheme.ReadFile("Schemes\\Book.json");
-            Console.WriteLine(tableScheme.name);
-            foreach (Column colunm in tableScheme.Columns)
-            {
-                Console.WriteLine(colunm.Name);
-                Console.WriteLine(colunm.Type);
-            }
+            //Console.OutputEncoding = System.Text.Encoding.UTF8;
+            //TableScheme tableScheme = TableScheme.ReadFile("Schemes\\Book.json");
+            //Console.WriteLine(tableScheme.Name);
+            //foreach (Column colunm in tableScheme.Columns)
+            //{
+            //    Console.WriteLine(colunm.Name);
+            //    Console.WriteLine(colunm.Type);
+            //}
+
+            Inform.Get("Schemes\\Book.json", "Schemes\\Book.csv");
         }
     }
 
     public class TableScheme
     {
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
         // в таблице есть список столбцов
+        [JsonPropertyName("columns")]
         public List<Column> Columns { get; set;  }
 
         // конструктор, чтобы заполнить объект при создании
@@ -36,21 +41,24 @@ namespace HardLab4
 
     public class Column
     {
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
+        [JsonPropertyName("type")]
         // у колонки есть тип данных в ней
-        public string Type { get; set; }
+        public ColumnType Type { get; set; }
+
     }
 
     public enum ColumnType
     {
-          Int, Float, String, Uint
+        Uint, Int, Double, Float, String,  DateTime
     }
 
     public class Table
     {
         public List<Row> Rows { get; }
-        private TableScheme tb { get; }
+        private TableScheme  Scheme { get; }
     }
 
     public class Row
@@ -58,5 +66,43 @@ namespace HardLab4
         public Dictionary<Column, object> Data { get; }
     }
 
+
+    public class Inform
+    {
+        public static void Get(string pathJson, string pathTable)
+        {
+            TableScheme tableScheme = TableScheme.ReadFile(pathJson);
+            Table table = new Table();
+
+            string[] lines = File.ReadAllLines(pathTable);
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string[] line = lines[i].Split(";");
+
+                if(line.Length > tableScheme.Columns.Count)
+                {
+                    throw new Exception();
+                }
+                else
+                {
+                    Row row = new Row();
+                }
+            }
+        }
+
+        static Row RowRead(string[] line, int numberOfLine, string pathTable)
+        {
+            Row row = new Row();
+
+            for(int i = 0; i < line.Length; i++)
+            {
+                
+            }
+
+        }
+
+
+
+    }
 
 }
